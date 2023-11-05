@@ -10,7 +10,12 @@ import { produce } from "immer";
 import Navbar from "./components/Navbar";
 import Cart from "./components/Cart";
 import Form from "./components/Form";
+import ExpenseItemsList from "./expense-tracker/components/ExpenseItemsList";
+import ExpenseFilter from "./expense-tracker/components/ExpenseFilter";
+import ExpenseForm from "./expense-tracker/components/ExpenseForm";
+import { date } from "zod";
 // import ListGroup from "./components/Listgroup";
+
 function App() {
   // let items = ["New York", "San Francisco", "Los Angeles", "Hong Kong"];
   // const handleSelecteItem = (item: string) => {
@@ -36,7 +41,17 @@ function App() {
   //     })
   //   );
   // };
-  const [cartItems, setCartItems] = useState(["Product 1", "Product 2"]);
+  // const [cartItems, setCartItems] = useState(["Product 1", "Product 2"]);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [expenses, setExpenses] = useState([
+    { id: 1, description: "aaa", amount: 10, category: "Groceries" },
+    { id: 2, description: "bbb", amount: 20, category: "Utilities" },
+    { id: 3, description: "ccc", amount: 30, category: "Utilities" },
+    { id: 4, description: "ddd", amount: 40, category: "Entertainment" },
+  ]);
+  const visibleExpenses = selectedCategory
+    ? expenses.filter((e) => e.category === selectedCategory)
+    : expenses;
   return (
     <div>
       {/* <ListGroup
@@ -71,7 +86,26 @@ function App() {
           setCartItems([]);
         }}
       /> */}
-      <Form></Form>
+      {/* <Form></Form> */}
+      <div className="mb-5">
+        <ExpenseForm
+          onSubmit={(newExpense) =>
+            setExpenses([
+              ...expenses,
+              { ...newExpense, id: expenses.length + 1 },
+            ])
+          }
+        />
+      </div>
+      <div className="mb-2">
+        <ExpenseFilter
+          onSelectCategory={(category) => setSelectedCategory(category)}
+        />
+      </div>
+      <ExpenseItemsList
+        expenses={visibleExpenses}
+        onDelete={(id) => setExpenses(expenses.filter((e) => e.id != id))}
+      />
     </div>
   );
 }
